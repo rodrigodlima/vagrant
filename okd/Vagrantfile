@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+Vagrant.configure("2") do |config|
+  config.vm.box = "rodrigodlima/mycentos7"
+  config.vm.box_check_update = false
+  config.vm.network "private_network", ip: "192.168.33.50"
+  config.vm.hostname = "openshift.example.com"
+  config.vm.provider "virtualbox" do |vb|
+     vb.memory = "6200"
+     vb.cpus = "2"
+  end
+  config.vm.provision "shell", inline: <<-SHELL
+	sudo yum install vim wget docker -y
+	mkdir /tmp/openshift
+	wget https://github.com/openshift/origin/releases/download/v3.9.0/openshift-origin-client-tools-v3.9.0-191fece-linux-64bit.tar.gz -O /tmp/openshift/openshift-origin-client-tools-v3.9.0-191fece-linux-64bit.tar.gz
+	cd /tmp/openshift && tar zxvf openshift-origin-client-tools-v3.9.0-191fece-linux-64bit.tar.gz
+	cd /tmp/openshift/openshift-origin-client-tools-v3.9.0-191fece-linux-64bit && sudo cp oc /usr/sbin
+	sudo systemctl enable docker
+        sudo cp /vagrant/daemon.json /etc/docker/
+        sudo systemctl start docker
+ 	oc cluster up --public-hostname='192.168.33.50'	
+  SHELL
+end
