@@ -1,0 +1,95 @@
+- name: Install deps
+  apt:
+    name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'unzip']
+    update_cache: yes
+
+- name: Download Vault
+  unarchive:
+    src: https://releases.hashicorp.com/vault/1.0.1/vault_1.0.1_linux_amd64.zip
+    dest: /usr/local/bin
+    remote_src: yes
+    validate_certs: False
+
+- name: Prevents memory from being swapped to disk
+  capabilities:
+    path: /usr/local/bin/vault
+    capability: cap_ipc_lock=+ep
+    state: present
+
+- name: Install Vault
+  raw: vault -autocomplete-install
+  ignore_errors: True
+
+- name: Create vault.d path
+  file:
+    path: /etc/vault.d
+    owner: root
+    group: root
+    mode: 640
+    state: directory
+
+- name: Create vault data path
+  file:
+    path: /etc/vault/data
+    owner: root
+    group: root
+    state: directory
+
+- name: Create Vault config gile
+  copy:
+    dest: "/etc/vault.d/vault.hcl"
+    content: |
+      ui = true
+
+      storage "file" {
+        path = "/etc/vault/data"
+      }
+
+      listener "tcp" {
+        address       = "0.0.0.0:8200"
+        tls_disable = 1
+        tls_cert_file = "/ssl-keys/server.crt"
+        tls_key_file = "/ssl-keys/server.key"
+      }
+
+      max_lease_ttl = "10h"
+      default_lease_ttl = "10h"
+
+- name: Set permission vault.d path
+  file:
+    path: /etc/vault.d
+    owner: root
+    group: root
+    recurse: yes
+    mode: 640
+
+- name: Create Vault service
+  copy:
+    dest: "/etc/systemd/system/vault.service"
+    content: |
+      [Unit]
+      Description=vault service
+      Requires=network-online.target
+      After=network-online.target
+      ConditionFileNotEmpty=/etc/vault.d/vault.hcl
+
+      [Service]
+      EnvironmentFile=-/etc/sysconfig/vault
+      Environment=GOMAXPROCS=2
+      Restart=on-failure
+      ExecStart=/usr/local/bin/vault server -config=/etc/vault.d/vault.hcl
+      StandardOutput=/var/log/vault-output.log
+      StandardError=/var/log/vault-error.log
+      LimitMEMLOCK=infinity
+      ExecReload=/bin/kill -HUP $MAINPID
+      KillSignal=SIGTERM
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Start vault service
+  service:
+    name: vault
+    enabled: yes
+    daemon-reload: yes
+    state: started
