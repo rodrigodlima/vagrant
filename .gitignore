@@ -1,3 +1,5 @@
 okd/\.vagrant/
 mycentos7/i\.vagrant/
 teste/
+docker-swarm/\.vagrant/
+**/.vagrant
