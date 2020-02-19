@@ -1,0 +1,17 @@
+- hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - import_tasks: dependencies.yml
+
+    - name: Init a new swarm with default parameters
+      docker_swarm:
+        state: present
+        advertise_addr: 192.168.56.20
+
+    - name: Add nodes
+      docker_swarm:
+        state: join
+        advertise_addr: 192.168.56.20
+        join_token: SWMTKN-1--12345
+        remote_addrs: [ '192.168.56.30:2377', '192.168.56.50:2377' ]

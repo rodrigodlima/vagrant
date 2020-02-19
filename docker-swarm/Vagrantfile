@@ -4,6 +4,12 @@ Vagrant.configure(2) do |config|
     eliot1.vm.box = "rodrigodlima/mycentos7"
     eliot1.vm.network "private_network", ip: "192.168.56.20"
     eliot1.vm.hostname = "eliot1"
+    
+    eliot1.vm.provision "ansible" do |ansible|
+      ansible.verbose = "v"
+      ansible.playbook = "manager.yml"
+    end
+
   end
 
   config.vm.define "eliot2" do |eliot2|
@@ -12,15 +18,15 @@ Vagrant.configure(2) do |config|
     eliot2.vm.hostname = "eliot2"
   end
 
- config.vm.define "eliot3" do |eliot3|
+  config.vm.define "eliot3" do |eliot3|
     eliot3.vm.box = "rodrigodlima/mycentos7"
     eliot3.vm.network "private_network", ip: "192.168.56.50"
     eliot3.vm.hostname = "eliot3"
- end 
+  end 
 
- config.vm.provision "shell", inline: <<-SHELL
-  sudo curl -fsSL https://get.docker.com |bash
-  sudo systemctl start docker
-  sudo systemctl enable docker
- SHELL
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo curl -fsSL https://get.docker.com |bash
+    sudo systemctl start docker
+    sudo systemctl enable docker
+  SHELL
 end
