@@ -1,7 +1,7 @@
 Vagrant.configure(2) do |config|
 
   config.vm.define "eliot1" do |eliot1|
-    eliot1.vm.box = "rodrigodlima/mycentos7"
+    eliot1.vm.box = "ubuntu/bionic64"
     eliot1.vm.network "private_network", ip: "192.168.56.20"
     eliot1.vm.hostname = "eliot1"
     
@@ -12,20 +12,21 @@ Vagrant.configure(2) do |config|
 
   end
 
-  config.vm.define "eliot2" do |eliot2|
-    eliot2.vm.box = "rodrigodlima/mycentos7"
-    eliot2.vm.network "private_network", ip: "192.168.56.30"
-    eliot2.vm.hostname = "eliot2"
-  end
+  #config.vm.define "eliot2" do |eliot2|
+  #  eliot2.vm.box = "rodrigodlima/mycentos7"
+  #  eliot2.vm.network "private_network", ip: "192.168.56.30"
+  #  eliot2.vm.hostname = "eliot2"
+  #end
 
-  config.vm.define "eliot3" do |eliot3|
-    eliot3.vm.box = "rodrigodlima/mycentos7"
-    eliot3.vm.network "private_network", ip: "192.168.56.50"
-    eliot3.vm.hostname = "eliot3"
-  end 
+  #config.vm.define "eliot3" do |eliot3|
+  #  eliot3.vm.box = "rodrigodlima/mycentos7"
+  #  eliot3.vm.network "private_network", ip: "192.168.56.50"
+  #  eliot3.vm.hostname = "eliot3"
+  #end 
 
   config.vm.provision "shell", inline: <<-SHELL
-    sudo curl -fsSL https://get.docker.com |bash
+    sudo apt-get update && apt-get install jq -y
+    sudo curl -k -fsSL https://get.docker.com |bash
     sudo systemctl start docker
     sudo systemctl enable docker
   SHELL

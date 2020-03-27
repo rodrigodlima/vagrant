@@ -2,6 +2,7 @@ ansible/.vagrant
 awx/.vagrant/
 docker/.vagrant/
 vault/.vagrant/
+mongodb/.vagrant/
 
 # OS-specific
 .DS_Store

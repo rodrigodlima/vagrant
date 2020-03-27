@@ -1,0 +1,26 @@
+Vagrant.configure(2) do |config|
+
+  config.vm.define "mongodb" do |mongodb|
+    mongodb.vm.box = "rodrigodlima/mycentos7"
+    mongodb.vm.network "private_network", ip: "192.168.56.90"
+    mongodb.vm.hostname = "mongodb"
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo yum install git epel-release ca-certificates -y
+    sudo yum install ansible -y
+    sudo cp /vagrant/*.crt /etc/pki/ca-trust/source/anchors/
+    sudo update-ca-trust extract
+    sudo git clone https://github.com/rodrigodlima/ansible-playbooks.git /tmp/ansible-playbooks/
+    cd /tmp/ansible-playbooks && export PIP_CERT=/etc/pki/ca-trust/source/anchors/ROOTCA.crt && sudo ansible-playbook -i inventories/local/hosts playbook_mongo.yml
+    sudo git clone -b configure_replicaset https://github.com/rodrigodlima/ansible-playbooks.git /tmp/ansible-playbooks2/
+    cd /tmp/ansible-playbooks2 && sudo ansible-playbook -i inventories/local/hosts playbook_create_replicaset.yml
+  SHELL
+  
+  config.vm.provider "virtualbox" do |vb|
+     vb.memory = "4096"
+   end
+
+
+
+end

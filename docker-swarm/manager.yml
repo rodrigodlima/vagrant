@@ -9,9 +9,24 @@
         state: present
         advertise_addr: 192.168.56.20
 
-    - name: Add nodes
-      docker_swarm:
-        state: join
-        advertise_addr: 192.168.56.20
-        join_token: SWMTKN-1--12345
-        remote_addrs: [ '192.168.56.30:2377', '192.168.56.50:2377' ]
+    - name: Get info on Docker Swarm
+      docker_swarm_info:
+      ignore_errors: yes
+      register: result
+
+    - name: Inform about basic flags
+      debug:
+        msg: |
+          Was able to talk to docker daemon: {{ result.can_talk_to_docker }}
+          Docker in Swarm mode: {{ result.docker_swarm_active }}
+          This is a Manager node: {{ result.docker_swarm_manager }}
+
+
+    - name: Get info on Docker Swarm and list of registered nodes
+      docker_swarm_info:
+        nodes: yes
+      register: result
+     
+    - debug:
+        var: result.swarm_facts
+
