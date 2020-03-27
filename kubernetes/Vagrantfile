@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+manager_ip = "192.168.56.150"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "manager" do |manager|
+    manager.vm.hostname = "manager"
+    manager.vm.box = "ubuntu/bionic64"
+    manager.vm.network "private_network", ip: manager_ip
+
+    manager.vm.provider :virtualbox do |v|
+      v.cpus = 2
+      v.memory = 3072
+    end
+
+
+    manager.vm.provision "ansible" do |ansible|
+      ansible.verbose = "v"
+      ansible.playbook = "manager.yml"
+    end
+
+
+  end
+
+  (1..2).each do |i|
+    config.vm.define "worker-#{i}" do |worker|
+      worker.vm.hostname = "worker-#{i}"
+      worker.vm.box = "ubuntu/bionic64"
+      worker.vm.network "private_network", ip: "192.168.56.#{i+2}"
+
+      worker.vm.provider :virtualbox do |v|
+        v.cpus = 2
+        v.memory = 3072
+      end
+
+      worker.vm.provision "ansible" do |ansible|
+        ansible.verbose = "v"
+        ansible.playbook = "workers.yml"
+      end
+    end
+  end
+end

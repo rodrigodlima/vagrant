@@ -1,0 +1,21 @@
+---
+- name: Install Docker
+  shell: "curl -fsSL https://get.docker.com | bash"
+
+- name: Import kubernetes repository keys
+  shell: "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
+
+- name: add Kubernetes repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes
+
+- name: Install Kubernetes
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - kubelet
+    - kubeadm
+    - kubectl
