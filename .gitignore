@@ -5,6 +5,9 @@ vault/.vagrant/
 mongodb/.vagrant/
 **/.vagrant/
 
+kubernetes/ubuntu-bionic-18.04-cloudimg-console.log
+kubernetes/join-command
+
 # OS-specific
 .DS_Store
 

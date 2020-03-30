@@ -1,5 +1,11 @@
 - hosts: all
-  gather_facts: false
+  gather_facts: true
   become: true
   tasks:
     - import_tasks: k8s.yml
+
+    - name: Copy the join command to server location
+      copy: src=join-command dest=/tmp/join-command.sh mode=0777
+
+    - name: Join the node to cluster
+      command: sh /tmp/join-command.sh

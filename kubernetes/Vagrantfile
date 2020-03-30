@@ -11,13 +11,16 @@ Vagrant.configure("2") do |config|
 
     manager.vm.provider :virtualbox do |v|
       v.cpus = 2
-      v.memory = 3072
+      v.memory = 2048
     end
 
 
     manager.vm.provision "ansible" do |ansible|
       ansible.verbose = "v"
       ansible.playbook = "manager.yml"
+      ansible.extra_vars = {
+        node_ip: manager_ip,
+      }
     end
 
 
@@ -31,7 +34,7 @@ Vagrant.configure("2") do |config|
 
       worker.vm.provider :virtualbox do |v|
         v.cpus = 2
-        v.memory = 3072
+        v.memory = 2048
       end
 
       worker.vm.provision "ansible" do |ansible|
