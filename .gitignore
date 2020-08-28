@@ -6,6 +6,7 @@ mongodb/.vagrant/
 **/.vagrant/
 
 kubernetes/ubuntu-bionic-18.04-cloudimg-console.log
+kubernetes/*.log
 kubernetes/join-command
 
 # OS-specific
