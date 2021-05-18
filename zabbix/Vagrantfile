@@ -1,4 +1,4 @@
-IMAGE_NAME = "rodrigodlima/mycentos-7-ssl"
+IMAGE_NAME = "rodrigodlima/mycentos7"
 N = 3
 
 Vagrant.configure("2") do |config|
